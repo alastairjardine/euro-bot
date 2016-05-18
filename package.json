@@ -1,17 +1,18 @@
 {
   "name": "euro-bot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "euro-bot",
   "main": "index.js",
+  "engines": {
+    "node": "4.4.4"
+  },
   "dependencies": {
-    "body-parser": "^1.15.1",
-    "express": "^4.13.4",
-    "request": "^2.72.0"
+    "messenger-bot":"^2.3.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "Apache"
 }
