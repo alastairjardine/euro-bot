@@ -1,66 +1,31 @@
-var express = require("express")
-var bodyParser = require("body-parser")
-var request = require("request")
-var app = express()
+ "use strict";
 
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN
-const ACCESS_TOKEN = process.env.ACCESS_TOKEN
+const http = require('http')
+const Bot = require('messenger-bot')
 
-app.set("port", 5000)
-
-app.use(bodyParser.urlencoded({extended: false}))
-
-app.use(bodyParser.json())
-
-app.get("/", function (req, res) {
-  res.send("hello world")
+let bot = new Bot({
+  token: process.env.VERIFY_TOKEN,
+  verify: process.env.VERIFY_TOKEN,
+  app_secret: process.env.APP_SECRET
 })
 
-// Verification GET
-app.get("/webhook/", function (req, res) {
-  if (req.query["hub.verify_token"] === VERIFY_TOKEN) {
-    console.log("verified!")
-    res.send(req.query["hub.challenge"])
-  } else {
-    console.log("not verified")
-    res.send("Error, wrong token")
-  }
+bot.on('error', (err) => {
+  console.log(err.message)
 })
 
-app.post("/webhook/", function (req, res) {
-  events = req.body.entry[0].messaging
-  console.log("Received: "+ JSON.stringify(events))
-  for (i = 0; i < events.length; i++) {
-    event = events[i]
-    sender = event.sender.id
-    if (event.message && event.message.text) {
-      text = event.message.text
-      console.log("received message: "+ text)
-      sendTextMessage(sender, "Received: "+ text)
-    }
-  }
-  res.sendStatus(200)
-})
+bot.on('message', (payload, reply) => {
+  let text = payload.message.text
 
-function sendTextMessage(sender, text) {
-  request({
-    url: "https://graph.facebook.com/v2.6/me/messages",
-    qs: { access_token: ACCESS_TOKEN },
-    method: 'POST',
-    json: {
-      recipient: { id:sender },
-      message: { text: text }
-    }
-  }, function(error, response, body) {
-    if (error) {
-      console.log('Error sending message: ', error);
-    } else if (response.body.error) {
-      console.log('Error: ', response.body.error);
-    }
+  bot.getProfile(payload.sender.id, (err, profile) => {
+    if (err) throw err
+
+    reply({ text }, (err) => {
+      if (err) throw err
+
+      console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
+    })
   })
-}
-
-app.listen((process.env.PORT || 5000), function() {
-  console.log("running on port", app.get("port"))
 })
 
+http.createServer(bot.middleware()).listen(3000)
+console.log('Echo bot server running at port 3000.')
