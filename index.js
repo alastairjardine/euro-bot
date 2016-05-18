@@ -4,7 +4,7 @@ const http = require('http')
 const Bot = require('messenger-bot')
 
 let bot = new Bot({
-  token: process.env.VERIFY_TOKEN,
+  token: process.env.ACCESS_TOKEN,
   verify: process.env.VERIFY_TOKEN,
   app_secret: process.env.APP_SECRET
 })
