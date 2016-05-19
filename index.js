@@ -28,4 +28,4 @@ bot.on('message', (payload, reply) => {
 })
 
 http.createServer(bot.middleware()).listen(process.env.PORT)
-console.log('Echo bot server running at port .' + process.env.PORT)
+console.log('Echo bot server running at port' + process.env.PORT)
